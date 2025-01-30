@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\CompanyService\CompanyService;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller
@@ -15,20 +16,16 @@ class CompanyController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $user = auth()->user();
+        $service = new CompanyService;
+        $result = $service->createCompany($request->all(), $user->id);
+        return $this->constractResponce($result);
     }
 
     /**
@@ -36,23 +33,20 @@ class CompanyController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $service = new CompanyService;
+        $result = $service->findCompanyById($id);
+        return $this->constractResponce($result);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $service = new CompanyService;
+        $result = $service->editCompany($request->all(), $id);
+        return $this->constractResponce($result);
     }
 
     /**
@@ -60,6 +54,8 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $service = new CompanyService;
+        $result = $service->deleteCompany($id);
+        return $this->constractResponce($result);
     }
 }
