@@ -49,7 +49,7 @@
      <li>При изменении бюджета на сумму выше 0, например если было 0 и мы поставили 5, то статус объявления из “В ожидании” должен переходить в “Активен”.</li>
 </ul>
 
- <p>php artisan migrate</p><br>
-<p>php artisan serve</p><br>
-<p>php artisan queue:work</p><br>
+<p><code>php artisan migrate</code></p>
+<p><code>php artisan serve</code></p>
+<p><code>php artisan queue:work</code></p>
 
