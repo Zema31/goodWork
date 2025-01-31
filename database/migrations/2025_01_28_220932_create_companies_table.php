@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('status');
-            $table->foreignId('user_id')->nullable()->index();
+            $table->foreignId('user_id')->index()->onDelete('cascade');
             $table->timestamps();
         });
     }

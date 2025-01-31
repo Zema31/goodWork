@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\CompanyService\CompanyService;
+use App\Services\PromoService\PromoService;
 use Illuminate\Http\Request;
 
-class CompanyController extends Controller
+class PromoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $service = new CompanyService;
-        $result = $service->findCompaniesByUserId();
+        $service = new PromoService;
+        $result = $service->findPromosByUserId();
         return $this->constractResponce($result);
     }
 
@@ -24,8 +24,8 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        $service = new CompanyService;
-        $result = $service->createCompany($request->all());
+        $service = new PromoService;
+        $result = $service->createPromo($request->all());
         return $this->constractResponce($result);
     }
 
@@ -34,8 +34,8 @@ class CompanyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $service = new CompanyService;
-        $result = $service->editStatusCompany($request->all(), $id);
+        $service = new PromoService;
+        $result = $service->editTextPromo($request->all(), $id);
         return $this->constractResponce($result);
     }
 
@@ -44,8 +44,8 @@ class CompanyController extends Controller
      */
     public function destroy(string $id)
     {
-        $service = new CompanyService;
-        $result = $service->deleteCompany($id);
+        $service = new PromoService;
+        $result = $service->deletePromo($id);
         return $this->constractResponce($result);
     }
 }

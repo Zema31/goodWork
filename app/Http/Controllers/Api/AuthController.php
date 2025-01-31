@@ -28,4 +28,11 @@ class AuthController extends Controller
         $result = $service->logoutUser();
         return $this->constractResponce($result);
     }
+
+    public function delete()
+    {
+        $service = new UserService;
+        $result = $service->deleteUser();
+        return $this->constractResponce($result);
+    }
 }

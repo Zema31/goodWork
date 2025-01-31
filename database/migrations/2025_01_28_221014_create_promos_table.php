@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('cpm', total: 10, places: 2);
             $table->decimal('amount', total: 10, places: 2);
             $table->string('button_text');
-            $table->foreignId('company_id')->nullable()->index();
+            $table->foreignId('company_id')->index()->onDelete('cascade');
             $table->timestamps();
         });
     }

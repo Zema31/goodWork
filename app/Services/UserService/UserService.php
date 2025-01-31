@@ -3,11 +3,13 @@
 namespace App\Services\UserService;
 
 use App\Models\User;
+use App\Services\BaseService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class UserService
+class UserService extends BaseService
 {
     public function loginUser(array $request): array
     {
@@ -24,19 +26,29 @@ class UserService
             $validator = Validator::make($request, $rules, $messages);
 
             if ($validator->fails()) {
-                $errors = $validator->errors();
-                return ['code' => 406, 'data' => ['message' => $errors]];
+                $errors = $validator->errors()->all();
+                return ['code' => 406, 'content' => ['message' => $errors]];
             }
 
             $user = User::where('email', $request['email'])->first();
 
             if (! $user || ! Hash::check($request['password'], $user->password)) {
-                return ['code' => 401, 'data' => ['message' => 'email или пароль указаны неверно.']];
+                return ['code' => 401, 'content' => ['message' => 'email или пароль указаны неверно.']];
             }
 
-            return ['code' => 200, 'data' => ['message' => 'Пользователь авторизован.', 'token' => $user->createToken('TEST_AUTH')->plainTextToken]];
+            return [
+                'code' => 200,
+                'content' => [
+                    'message' => 'Пользователь зарегистрирован.',
+                    'data' => [
+                        'token' => $user->createToken('TEST_AUTH')->plainTextToken,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ]
+                ]
+            ];
         } catch (Throwable $e) {
-            return ['code' => 422, 'data' => ['message' => $e->getMessage()]];
+            return $this->errorLog('loginUser', $e->getMessage());
         }
     }
 
@@ -59,10 +71,9 @@ class UserService
             $validator = Validator::make($request, $rules, $messages);
 
             if ($validator->fails()) {
-                $errors = $validator->errors();
-                return ['code' => 406, 'data' => ['message' => $errors]];
+                $errors = $validator->errors()->all();
+                return ['code' => 406, 'content' => ['message' => $errors]];
             }
-
 
             $user = User::create([
                 'name' => $request['name'],
@@ -71,12 +82,22 @@ class UserService
             ]);
 
             if (!$user) {
-                return ['code' => 422, 'data' => ['message' => 'Произошла ошибка. Попробуйте позднее.']];
+                return ['code' => 422, 'content' => ['message' => 'Произошла ошибка. Попробуйте позднее.']];
             }
 
-            return ['code' => 200, 'data' => ['message' => 'Пользователь зарегистрирован.', 'token' => $user->createToken('TEST_AUTH')->plainTextToken]];
+            return [
+                'code' => 200,
+                'content' => [
+                    'message' => 'Пользователь зарегистрирован.',
+                    'data' => [
+                        'token' => $user->createToken('TEST_AUTH')->plainTextToken,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ]
+                ]
+            ];
         } catch (Throwable $e) {
-            return ['code' => 422, 'data' => ['message' => $e->getMessage()]];
+            return $this->errorLog('signupUser', $e->getMessage());
         }
     }
 
@@ -84,9 +105,23 @@ class UserService
     {
         try {
             auth()->user()->tokens()->delete();
-            return ['code' => 200, 'data' => ['message' => 'Пользователь вышел из системы.']];
+            return ['code' => 200, 'content' => ['message' => 'Пользователь вышел из системы.']];
         } catch (Throwable $e) {
-            return ['code' => 422, 'data' => ['message' => $e->getMessage()]];
+            return $this->errorLog('logoutUser', $e->getMessage());
+        }
+    }
+
+    public function deleteUser()
+    {
+        try {
+            $user = auth()->user();
+            $user->promos()->delete();
+            $user->companies()->delete();
+            $user->tokens()->delete();
+            $user->delete();
+            return ['code' => 200, 'content' => ['message' => 'Пользователь удален.']];
+        } catch (Throwable $e) {
+            return $this->errorLog('deleteUser', $e->getMessage());
         }
     }
 }
